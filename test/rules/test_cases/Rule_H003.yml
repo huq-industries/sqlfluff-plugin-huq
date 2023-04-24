@@ -1,0 +1,62 @@
+rule: H003
+
+isolated:
+  pass_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+
+isolated_bracketed:
+  pass_str: |
+    SELECT
+        a
+    FROM
+        (foo)
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+
+
+not_isolated:
+  fail_str: |
+    SELECT
+        a
+    FROM foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+  fix_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+
+not_isolated_bracketed:
+  fail_str: |
+    SELECT
+        a
+    FROM (foo)
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+  fix_str: |
+    SELECT
+        a
+    FROM
+        (foo)
+    JOIN
+        blah
+    ON
+        foo.a = blah.a

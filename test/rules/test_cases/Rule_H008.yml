@@ -1,0 +1,183 @@
+rule: H008
+
+no_naked_operator:
+  pass_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        foo.a1 = blah.a2
+
+long_line_no_naked_operator:
+  pass_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        (
+          aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        ) = 1
+    WHERE
+        (
+          aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        ) = 1
+
+long_line_naked_operator:
+  fail_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        = 1
+        AND aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        = 1
+    WHERE
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        = 1
+        AND aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        = 1
+  fix_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        (
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        ) = 1
+        AND (
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        ) = 1
+    WHERE
+        (
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        ) = 1
+        AND (
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        ) = 1
+
+
+long_line_naked_operator_bracketed:
+  fail_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        = 1
+    WHERE
+        (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        = 1
+  fix_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        (
+    (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        ) = 1
+    WHERE
+        (
+    (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        ) = 1
+
+
+naked_operator:
+  fail_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a
+        = blah.a
+    WHERE
+        foo.a1
+        = blah.a2
+  fix_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        (
+    foo.a
+        ) = blah.a
+    WHERE
+        (
+    foo.a1
+        ) = blah.a2
+
+nested_complication:
+  fail_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        ((aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        = 1
+        AND
+        aa
+        + bb
+        = 1231
+        )
+  fix_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        ((
+    (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        + bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        ) = 1
+        AND
+        (
+    aa
+        + bb
+        ) = 1231
+        )

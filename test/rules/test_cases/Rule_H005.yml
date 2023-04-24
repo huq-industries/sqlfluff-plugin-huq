@@ -1,0 +1,128 @@
+rule: H005
+
+isolated_numeric_literal:
+  pass_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        1
+
+isolated_column_refrence:
+  pass_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        a
+
+isolated_expression:
+  pass_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        coalesce(col, 1)
+
+not_isolated_numeric_literal:
+  fail_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY 1
+  fix_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        1
+
+
+not_isolated_column_reference:
+  fail_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY a
+  fix_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        a
+
+not_isolated_expression:
+  fail_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY coalesce(col, 1)
+  fix_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        coalesce(col, 1)

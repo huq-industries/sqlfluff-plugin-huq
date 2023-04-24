@@ -1,0 +1,169 @@
+rule: H006
+
+isolated_column_reference:
+  pass_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        1
+
+isolated_literal:
+  pass_str: |
+    SELECT
+        'a'
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        a
+
+isolated_expression:
+  pass_str: |
+    SELECT
+        coalesce(col, 1)
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        coalesce(col, 1)
+
+isolated_expression_with_distinct:
+  pass_str: |
+    SELECT DISTINCT
+        coalesce(col, 1)
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        coalesce(col, 1)
+
+not_isolated_column_reference:
+  fail_str: |
+    SELECT a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        1
+  fix_str: |
+    SELECT
+        a
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        1
+
+not_isolated_literal:
+  fail_str: |
+    SELECT 'a'
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        a
+  fix_str: |
+    SELECT
+        'a'
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        a
+
+not_isolated_expression:
+  fail_str: |
+    SELECT coalesce(col, 1)
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        coalesce(col, 1)
+  fix_str: |
+    SELECT
+        coalesce(col, 1)
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        coalesce(col, 1)
+
+not_isolated_expression_with_distinct:
+  fail_str: |
+    SELECT DISTINCT coalesce(col, 1)
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        coalesce(col, 1)
+  fix_str: |
+    SELECT DISTINCT
+        coalesce(col, 1)
+    FROM
+        foo
+    JOIN
+        blah
+    ON
+        foo.a = blah.a
+    WHERE
+        TRUE
+    GROUP BY
+        coalesce(col, 1)
